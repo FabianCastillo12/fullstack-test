@@ -3,7 +3,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { UsersModule } from './presentation/users/users.module';
+import { GraphqlModule } from './graphql/graphql.module';
 import { UserEntity } from './infrastructure/users/user.entity.orm';
+import { OrderEntity } from './infrastructure/orders/order.entity.orm';
 
 @Module({
   imports: [
@@ -15,13 +17,14 @@ import { UserEntity } from './infrastructure/users/user.entity.orm';
       password: '.',
       database: 'examen_db',
       schema: 'public',
-      entities: [UserEntity],
+      entities: [UserEntity, OrderEntity],
       synchronize: true,
     }),
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60000, limit: 10 }],
     }),
     UsersModule,
+    GraphqlModule,
   ],
   controllers: [],
   providers: [
