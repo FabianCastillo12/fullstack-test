@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import type { Product } from "../types/product";
 import { fetchProducts } from "../api/productsApi";
 
 export function useProducts(search: string, page: number, limit: number) {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -11,22 +12,14 @@ export function useProducts(search: string, page: number, limit: number) {
     setIsLoading(true);
     setError(null);
 
-    fetchProducts()
-      .then((data) => setAllProducts(data))
-      .catch(() => setError("Error al cargar productos"))
+    fetchProducts({ page, limit, search })
+      .then((response) => {
+        setProducts(response.products);
+        setTotal(response.total);
+      })
+      .catch(() => setError("No se pudieron cargar los productos"))
       .finally(() => setIsLoading(false));
-  }, []);
-
-  const { products, total } = useMemo(() => {
-    const filtered = allProducts.filter((p) =>
-      p.name?.toLowerCase().includes(search.toLowerCase())
-    );
-
-    const start = (page - 1) * limit;
-    const paged = filtered.slice(start, start + limit);
-
-    return { products: paged, total: filtered.length };
-  }, [allProducts, search, page, limit]);
+  }, [search, page, limit]);
 
   return { products, total, isLoading, error };
 }

@@ -14,12 +14,13 @@ export default function ProductsPage() {
     page,
     limit
   );
-  const totalPages = Math.ceil(total / limit);
 
   const handleSearch = (value: string) => {
     setSearch(value);
     setPage(1);
   };
+
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="max-w-4xl mx-auto">
